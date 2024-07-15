@@ -6,7 +6,7 @@ var config = {
     width: 800,
     height: 600,
     backgroundColor: 0x000000,
-    scene: [],
+    scene: [BootScene, TitleScene, GameScene, FinishScene],
     pixelArt: true,
     physics: {
         default: "arcade",
