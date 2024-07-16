@@ -9,6 +9,7 @@ class GameScene extends Phaser.Scene {
         this.background.setOrigin(0, 0);
 
         this.player = this.physics.add.image(42, 344, "car");
+        this.player.flipY = true;
         this.player.setScale(.013);
         this.player.setCollideWorldBounds(true);
 
@@ -19,20 +20,27 @@ class GameScene extends Phaser.Scene {
     }
 
     update() {
+        this.moveCar();
+
         if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-160);
+            this.player.angle -= 1; 
         } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(160);
-        } else {
-            this.player.setVelocityX(0);
+            this.player.angle += 1; 
         }
 
-        if (this.cursors.up.isDown) {
-            this.player.setVelocityY(-160);
-        } else if (this.cursors.down.isDown) {
-            this.player.setVelocityY(160);
+        this.cameras.main.setRotation(-this.player.rotation);
+    }
+
+    moveCar() {
+        const speed = 100;
+
+        if (this.cursors.down.isDown) {
+            this.player.setVelocityX(this.player.body.velocity.x * 0.99); // Adjust deceleration rate as needed
+            this.player.setVelocityY(this.player.body.velocity.y * 0.99); // Adjust deceleration rate as needed
         } else {
-            this.player.setVelocityY(0);
+            this.player.setVelocityY(-Math.cos(this.player.rotation) * speed); // Positive y is upwards
+            this.player.setVelocityX(Math.sin(this.player.rotation) * speed); // Positive x is right
+    
         }
     }
 }
