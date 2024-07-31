@@ -4,7 +4,8 @@ class BootScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("map", "assets/images/map.png");
+        this.load.image("track", "assets/images/track.png");
+        this.load.image("grass", "assets/images/grass.png");
         this.load.image("car", "assets/images/car.png");
         this.load.image("playButton", "assets/images/playButton.png")
         this.load.image("clouds", "assets/images/clouds.png")
