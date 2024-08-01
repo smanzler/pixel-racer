@@ -6,7 +6,8 @@ class GameScene extends Phaser.Scene {
 
     create() {
         this.track = this.add.image(0, 0, "track").setOrigin(0, 0);
-        this.grass = this.add.image(0, 0, "grass").setOrigin(0, 0);
+        this.grass = this.physics.add.staticImage(0, 0, "innerGrass");
+        this.outerGrass = this.physics.add.staticImage(0, 0, "outerGrass");
 
         this.player = this.physics.add.image(42, 344, "car");
         this.player.flipY = true;
@@ -34,27 +35,25 @@ class GameScene extends Phaser.Scene {
     }
 
     moveCar() {
-        const maxSpeed = 100; // Maximum speed
-        const acceleration = 5; // Acceleration rate
-        const deceleration = 0.98; // Deceleration rate
+        const maxSpeed = 100;
+        const acceleration = 1;
+        const deceleration = 0.98;
+
+        const minGrassSpeed = 40;
+        const grassDeceleration = 0.9;
 
         if (this.cursors.down.isDown) {
-            // Decelerate the car smoothly
             this.currentSpeed *= deceleration;
             if (this.currentSpeed < 5) {
-                this.currentSpeed = 0; // Stop completely if very slow
+                this.currentSpeed = 0; 
             }
+        } else if (this.physics.overlap(this.player, this.innerGrass) || this.physics.overlap(this.player, this.outerGrass)) {
+            this.currentSpeed > minGrassSpeed ? this.currentSpeed *= grassDeceleration : this.currentSpeed = minGrassSpeed;
         } else {
-            // Accelerate gradually until reaching the maximum speed
-            if (this.currentSpeed < maxSpeed) {
-                this.currentSpeed += acceleration;
-            } else {
-                this.currentSpeed = maxSpeed;
-            }
+            this.currentSpeed <= maxSpeed ? this.currentSpeed += acceleration : this.currentSpeed = maxSpeed;
         }
 
-        // Update the car's velocity based on the current speed and rotation
-        this.player.setVelocityY(-Math.cos(this.player.rotation) * this.currentSpeed); // Positive y is upwards
-        this.player.setVelocityX(Math.sin(this.player.rotation) * this.currentSpeed); // Positive x is right
+        this.player.setVelocityY(-Math.cos(this.player.rotation) * this.currentSpeed); 
+        this.player.setVelocityX(Math.sin(this.player.rotation) * this.currentSpeed); 
     }
 }
