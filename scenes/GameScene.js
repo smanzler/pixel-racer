@@ -16,8 +16,8 @@ class GameScene extends Phaser.Scene {
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        this.cameras.main.startFollow(this.player);
-        this.cameras.main.setZoom(4);
+        // this.cameras.main.startFollow(this.player);
+        // this.cameras.main.setZoom(4);
 
         this.scene.launch('OverlayScene', { parentScene: this });
 
@@ -82,7 +82,8 @@ class GameScene extends Phaser.Scene {
             { x: 0, y: 30, width: 205, height: 60 },
             { x: 0, y: 90, width: 173, height: 35 },
             { x: 191, y: 114, width: 1, height: 1 },
-            { x: 253, y: 64, width: 205, height: 60 },
+            { x: 253, y: 64, width: 160, height: 95 },
+            { x: 413, y: 97, width: 34, height: 27},
         ];
 
         positions.forEach(pos => {
@@ -92,10 +93,10 @@ class GameScene extends Phaser.Scene {
             hitbox.setVisible(false);
             this.grassGroup.add(hitbox);
 
-            const border = this.add.graphics();
-            border.lineStyle(2, 0xff0000);
-            border.strokeRect(pos.x, pos.y, pos.width, pos.height);
-            this.add.existing(border);
+            // const border = this.add.graphics();
+            // border.lineStyle(2, 0xff0000);
+            // border.strokeRect(pos.x, pos.y, pos.width, pos.height);
+            // this.add.existing(border);
         });
     }
 
