@@ -5,24 +5,29 @@ class GameScene extends Phaser.Scene {
 
 
     create() {
-        this.track = this.add.image(0, 0, "track").setOrigin(0, 0);
-        this.grass = this.add.image(0, 0, "grass").setOrigin(0, 0);
+        this.background = this.add.image(0, 0, "map").setOrigin(0, 0);
 
         this.player = this.physics.add.image(42, 344, "car");
         this.player.flipY = true;
         this.player.setScale(.013);
         this.player.setCollideWorldBounds(true);
 
+        this.grassGroup = this.physics.add.staticGroup()
+
+        this.createGrassHitboxes();
+
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        this.currentSpeed = 0;
+        // this.currentSpeed = 0;
 
-        this.cameras.main.startFollow(this.player);
-        this.cameras.main.setZoom(4);
+        // this.cameras.main.startFollow(this.player);
+        // this.cameras.main.setZoom(4);
     }
 
     update() {
-        this.moveCar();
+        // this.moveCar();
+
+        if (!this.gameStarted) return;
 
         if (this.cursors.left.isDown) {
             this.player.angle -= 1; 
@@ -34,27 +39,47 @@ class GameScene extends Phaser.Scene {
     }
 
     moveCar() {
-        const maxSpeed = 100; // Maximum speed
-        const acceleration = 5; // Acceleration rate
-        const deceleration = 0.98; // Deceleration rate
+        const maxSpeed = 100;
+        const acceleration = 1;
+        const deceleration = 0.98;
+
+        const minGrassSpeed = 40;
+        const grassDeceleration = 0.9;
 
         if (this.cursors.down.isDown) {
-            // Decelerate the car smoothly
             this.currentSpeed *= deceleration;
             if (this.currentSpeed < 5) {
-                this.currentSpeed = 0; // Stop completely if very slow
+                this.currentSpeed = 0; 
             }
+        } else if (this.physics.overlap(this.player, this.grassGroup)) {
+            this.currentSpeed > minGrassSpeed ? this.currentSpeed *= grassDeceleration : this.currentSpeed = minGrassSpeed;
         } else {
-            // Accelerate gradually until reaching the maximum speed
-            if (this.currentSpeed < maxSpeed) {
-                this.currentSpeed += acceleration;
-            } else {
-                this.currentSpeed = maxSpeed;
-            }
+            this.currentSpeed <= maxSpeed ? this.currentSpeed += acceleration : this.currentSpeed = maxSpeed;
         }
 
-        // Update the car's velocity based on the current speed and rotation
-        this.player.setVelocityY(-Math.cos(this.player.rotation) * this.currentSpeed); // Positive y is upwards
-        this.player.setVelocityX(Math.sin(this.player.rotation) * this.currentSpeed); // Positive x is right
+        this.player.setVelocityY(-Math.cos(this.player.rotation) * this.currentSpeed); 
+        this.player.setVelocityX(Math.sin(this.player.rotation) * this.currentSpeed); 
     }
+
+    createGrassHitboxes() {
+        const positions = [
+            { x: 30, y: 25, width: 500, height: 50 },
+            { x: 300, y: 200, width: 100, height: 100 },
+            { x: 500, y: 300, width: 100, height: 100 }
+        ];
+    
+        positions.forEach(pos => {
+            const hitbox = this.physics.add.staticSprite(pos.x + pos.width / 2, pos.y + pos.height / 2, null); 
+            hitbox.setSize(pos.width, pos.height); 
+            hitbox.setOrigin(0, 0); 
+            hitbox.setVisible(false);
+            this.grassGroup.add(hitbox); 
+
+            const border = this.add.graphics();
+            border.lineStyle(2, 0xff0000);
+            border.strokeRect(pos.x, pos.y, pos.width, pos.height);
+            this.add.existing(border);
+        });
+    }
+    
 }
