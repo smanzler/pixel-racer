@@ -3,7 +3,6 @@ class GameScene extends Phaser.Scene {
         super("GameScene");
     }
 
-
     create() {
         this.background = this.add.image(0, 0, "map").setOrigin(0, 0);
 
@@ -12,42 +11,30 @@ class GameScene extends Phaser.Scene {
         this.player.setScale(.013);
         this.player.setCollideWorldBounds(true);
 
-        this.grassGroup = this.physics.add.staticGroup()
-
+        this.grassGroup = this.physics.add.staticGroup();
         this.createGrassHitboxes();
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        // this.cameras.main.startFollow(this.player);
-        // this.cameras.main.setZoom(4);
+        this.cameras.main.startFollow(this.player);
+        this.cameras.main.setZoom(4);
 
-        this.countdown = 3; 
-        this.countdownText = this.add.text(42, 344, `${this.countdown}`, {
-            fontSize: '64px',
-            fill: '#ffffff'
-        }).setOrigin(0.5, 0.5);
-
-        this.time.addEvent({
-            delay: 1000,
-            callback: this.updateCountdown,
-            callbackScope: this,
-            loop: true
-        });
-
-        this.gameStarted = false;
+        // Start the overlay scene
+        this.scene.launch('OverlayScene', { parentScene: this });
 
         this.currentSpeed = 0;
+        this.gameStarted = false;
     }
 
     update() {
         if (!this.gameStarted) return;
-        
+
         this.moveCar();
-        
+
         if (this.cursors.left.isDown) {
-            this.player.angle -= 1; 
+            this.player.angle -= 1;
         } else if (this.cursors.right.isDown) {
-            this.player.angle += 1; 
+            this.player.angle += 1;
         }
 
         this.cameras.main.setRotation(-this.player.rotation);
@@ -64,7 +51,7 @@ class GameScene extends Phaser.Scene {
         if (this.cursors.down.isDown) {
             this.currentSpeed *= deceleration;
             if (this.currentSpeed < 5) {
-                this.currentSpeed = 0; 
+                this.currentSpeed = 0;
             }
         } else if (this.physics.overlap(this.player, this.grassGroup)) {
             this.currentSpeed > minGrassSpeed ? this.currentSpeed *= grassDeceleration : this.currentSpeed = minGrassSpeed;
@@ -72,8 +59,8 @@ class GameScene extends Phaser.Scene {
             this.currentSpeed <= maxSpeed ? this.currentSpeed += acceleration : this.currentSpeed = maxSpeed;
         }
 
-        this.player.setVelocityY(-Math.cos(this.player.rotation) * this.currentSpeed); 
-        this.player.setVelocityX(Math.sin(this.player.rotation) * this.currentSpeed); 
+        this.player.setVelocityY(-Math.cos(this.player.rotation) * this.currentSpeed);
+        this.player.setVelocityX(Math.sin(this.player.rotation) * this.currentSpeed);
     }
 
     createGrassHitboxes() {
@@ -84,13 +71,13 @@ class GameScene extends Phaser.Scene {
             { x: 173, y: 90, width: 26, height: 30 },
             { x: 253, y: 64, width: 205, height: 60 },
         ];
-    
+
         positions.forEach(pos => {
-            const hitbox = this.physics.add.staticSprite(pos.x + pos.width / 2, pos.y + pos.height / 2, null); 
-            hitbox.setSize(pos.width, pos.height); 
-            hitbox.setOrigin(0, 0); 
+            const hitbox = this.physics.add.staticSprite(pos.x + pos.width / 2, pos.y + pos.height / 2, null);
+            hitbox.setSize(pos.width, pos.height);
+            hitbox.setOrigin(0, 0);
             hitbox.setVisible(false);
-            this.grassGroup.add(hitbox); 
+            this.grassGroup.add(hitbox);
 
             const border = this.add.graphics();
             border.lineStyle(2, 0xff0000);
@@ -99,17 +86,7 @@ class GameScene extends Phaser.Scene {
         });
     }
 
-    updateCountdown() {
-        if (this.countdown > 1) {
-            this.countdown--;
-            this.countdownText.setText(`${this.countdown}`);
-        } else if (this.countdown === 1) {
-            this.countdown--;
-            // this.gameStarted = true;
-            this.countdownText.setText('GO!');
-        } else {
-            this.countdownText.setVisible(false);
-            this.time.removeAllEvents(); 
-        }
+    startGame() {
+        this.gameStarted = true;
     }
 }

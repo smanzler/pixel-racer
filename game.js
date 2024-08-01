@@ -12,7 +12,7 @@ var config = {
         height: 600,
     },
     backgroundColor: 0x000000,
-    scene: [BootScene, TitleScene, GameScene, FinishScene],
+    scene: [BootScene, TitleScene, GameScene,OverlayScene, FinishScene],
     pixelArt: true,
     physics: {
         default: "arcade",
