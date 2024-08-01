@@ -16,8 +16,8 @@ class GameScene extends Phaser.Scene {
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        // this.cameras.main.startFollow(this.player);
-        // this.cameras.main.setZoom(4);
+        this.cameras.main.startFollow(this.player);
+        this.cameras.main.setZoom(4);
 
         this.scene.launch('OverlayScene', { parentScene: this });
 
