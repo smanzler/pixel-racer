@@ -18,17 +18,32 @@ class GameScene extends Phaser.Scene {
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        // this.currentSpeed = 0;
-
         // this.cameras.main.startFollow(this.player);
         // this.cameras.main.setZoom(4);
+
+        this.countdown = 3; 
+        this.countdownText = this.add.text(42, 344, `${this.countdown}`, {
+            fontSize: '64px',
+            fill: '#ffffff'
+        }).setOrigin(0.5, 0.5);
+
+        this.time.addEvent({
+            delay: 1000,
+            callback: this.updateCountdown,
+            callbackScope: this,
+            loop: true
+        });
+
+        this.gameStarted = false;
+
+        this.currentSpeed = 0;
     }
 
     update() {
-        // this.moveCar();
-
         if (!this.gameStarted) return;
-
+        
+        this.moveCar();
+        
         if (this.cursors.left.isDown) {
             this.player.angle -= 1; 
         } else if (this.cursors.right.isDown) {
@@ -63,9 +78,11 @@ class GameScene extends Phaser.Scene {
 
     createGrassHitboxes() {
         const positions = [
-            { x: 30, y: 25, width: 500, height: 50 },
-            { x: 300, y: 200, width: 100, height: 100 },
-            { x: 500, y: 300, width: 100, height: 100 }
+            { x: 0, y: 0, width: 512, height: 30 },
+            { x: 0, y: 30, width: 205, height: 60 },
+            { x: 0, y: 90, width: 173, height: 35 },
+            { x: 173, y: 90, width: 26, height: 30 },
+            { x: 253, y: 64, width: 205, height: 60 },
         ];
     
         positions.forEach(pos => {
@@ -81,5 +98,18 @@ class GameScene extends Phaser.Scene {
             this.add.existing(border);
         });
     }
-    
+
+    updateCountdown() {
+        if (this.countdown > 1) {
+            this.countdown--;
+            this.countdownText.setText(`${this.countdown}`);
+        } else if (this.countdown === 1) {
+            this.countdown--;
+            // this.gameStarted = true;
+            this.countdownText.setText('GO!');
+        } else {
+            this.countdownText.setVisible(false);
+            this.time.removeAllEvents(); 
+        }
+    }
 }
