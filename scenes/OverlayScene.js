@@ -1,6 +1,6 @@
 class OverlayScene extends Phaser.Scene {
     constructor() {
-        super({ key: 'OverlayScene' });
+        super("OverlayScene");
     }
 
     init(data) {
@@ -27,6 +27,13 @@ class OverlayScene extends Phaser.Scene {
             loop: true
         });
 
+        this.checkpointText = this.add.text(790, 10, 'Checkpoint: 0/1', { 
+            fontSize: '32px', 
+            fill: '#FFF' 
+        }).setOrigin(1, 0).setScrollFactor(0);
+        
+        this.events.on('updateCheckpoint', this.updateCheckpoint, this);
+
         this.gameStarted = false;
     }
 
@@ -50,5 +57,13 @@ class OverlayScene extends Phaser.Scene {
             this.countdownText.setVisible(false);
             this.time.removeAllEvents();
         }
+    }
+
+    updateCheckpoint() {
+        this.checkpointText.setText(`Checkpoint: 1/1`);
+    }
+
+    getTimer() {
+        return this.timer;
     }
 }

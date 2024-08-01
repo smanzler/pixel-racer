@@ -19,11 +19,24 @@ class GameScene extends Phaser.Scene {
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setZoom(4);
 
-        // Start the overlay scene
         this.scene.launch('OverlayScene', { parentScene: this });
 
         this.currentSpeed = 0;
         this.gameStarted = false;
+        this.hitCheckpoint = false;
+
+        this.checkpoint = this.physics.add.staticImage(465, 125, null).setSize(50, 10).setVisible(false);
+        this.finishLine = this.physics.add.staticImage(47, 315, null).setSize(40, 10).setVisible(false);
+        
+
+        this.physics.add.overlap(this.player, this.checkpoint, this.reachCheckpoint, null, this);
+        this.physics.add.overlap(this.player, this.finishLine, this.reachFinishLine, null, this);
+
+        this.input.on('pointermove', (pointer) => {
+            if (this.finishLine.getBounds().contains(pointer.x, pointer.y)) {
+                console.log('Mouse is over the sprite');
+            }
+        });
     }
 
     update() {
@@ -68,7 +81,7 @@ class GameScene extends Phaser.Scene {
             { x: 0, y: 0, width: 512, height: 30 },
             { x: 0, y: 30, width: 205, height: 60 },
             { x: 0, y: 90, width: 173, height: 35 },
-            { x: 173, y: 90, width: 26, height: 30 },
+            { x: 191, y: 114, width: 1, height: 1 },
             { x: 253, y: 64, width: 205, height: 60 },
         ];
 
@@ -89,4 +102,21 @@ class GameScene extends Phaser.Scene {
     startGame() {
         this.gameStarted = true;
     }
+
+    reachCheckpoint() {
+        if (!this.hitCheckpoint) {
+            this.hitCheckpoint = true;
+            this.scene.get('OverlayScene').events.emit('updateCheckpoint');
+        }
+    }
+
+    reachFinishLine() {
+        if (this.hitCheckpoint) {
+            const finalTime = this.scene.get('OverlayScene').getTimer();
+            this.scene.stop('GameScene');
+            this.scene.stop('OverlayScene');
+            this.scene.start('FinishScene', { finalTime: finalTime });
+        }
+    }
+    
 }
